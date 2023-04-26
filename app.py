@@ -7,10 +7,13 @@ def predict(input_text, option):
     if option == "Semantic search":
 
         response = db_lookup.recommend_based_on_text(input_text)
-        output = f"Message: {response['message']} \n Datasets: {', '.join([x for x in response['datasets']])}"
+        output = f"Message: {response['message']} \n \n Datasets: {' \n '.join([x for x in response['datasets']])}"
     elif option == 'Dataset similarity':
         response = db_lookup.get_similar_datasets(input_text)
-        output = f"Similar Datasets: {', '.join([x for x in response['datasets']])}"
+        if 'error' in response:
+            output = response['error']
+        else:
+            output = f"Similar Datasets: {' \n '.join([x for x in response['datasets']])}"
 
     else:
         output = "Please select an option"
