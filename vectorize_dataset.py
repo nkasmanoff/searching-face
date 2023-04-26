@@ -1,7 +1,6 @@
 from datasets import load_dataset
 from helpers import clean_up_tags
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.document_loaders import DataFrameLoader
 
@@ -18,14 +17,13 @@ def load_descriptions_data():
     return hf_df
 
 
-def create_db(hf_df):
+def create_db(hf_df, embeddings):
     loader = DataFrameLoader(hf_df, page_content_column="description_full")
     documents = loader.load()
     # split the documents into chunks
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     texts = text_splitter.split_documents(documents)
     # select which embeddings we want to use
-    embeddings = OpenAIEmbeddings()
     # create the vectorestore to use as the index
     db = Chroma.from_documents(texts, embeddings)    
     return db

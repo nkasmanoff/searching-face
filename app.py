@@ -1,11 +1,17 @@
 import gradio as gr
+from dataset_recommender import DatasetRecommender
 
+db_lookup = DatasetRecommender()
 def predict(input_text, option):
 
     if option == "Semantic search":
-        output = "Option 1 selected. Input text: " + input_text
+
+        response = db_lookup.recommend_based_on_text(input_text)
+        output = f"Message: {response['message']} \n Datasets: {', '.join([x for x in response['datasets']])}"
     elif option == 'Dataset similarity':
-        output = "Option 2 selected. Input text: " + input_text
+        response = db_lookup.get_similar_datasets(input_text)
+        output = f"Similar Datasets: {', '.join([x for x in response['datasets']])}"
+
     else:
         output = "Please select an option"
     return output
