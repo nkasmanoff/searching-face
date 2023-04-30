@@ -48,3 +48,18 @@ def get_dataset_metadata(dataset_url):
                 retrieved_metadata[key] = response_json[key]
 
     return retrieved_metadata
+
+
+def get_dataset_readme(dataset_url):
+    retrieved_metadata = {}
+    metadata_url = check_api_url(dataset_url)
+    readme_url = dataset_url + '/raw/main/README.md'
+    readme_response = requests.get(readme_url)
+    metadata_response = requests.get(metadata_url)
+    if readme_response.status_code == 200:
+        response_text = readme_response.text
+        dataset_id = metadata_response.json()['id']
+        retrieved_metadata = {'id': dataset_id, 'README': response_text}
+
+    return retrieved_metadata
+

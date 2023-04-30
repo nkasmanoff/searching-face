@@ -5,12 +5,19 @@ from langchain.vectorstores import Chroma
 from langchain.document_loaders import DataFrameLoader
 
 
-def load_descriptions_data():
-    hf_datasets = load_dataset('nkasmanoff/huggingface-datasets')
-    hf_df = hf_datasets['train'].to_pandas()
-    hf_df['tags_cleaned'] = hf_df['tags'].apply(clean_up_tags)
-    hf_df.dropna(subset=['description'],inplace=True)
-    hf_df['description_full'] = hf_df['description'].fillna('') + ' ' + hf_df['tags_cleaned']
+def load_descriptions_data(dataset='nkasmanoff/hf-dataset-cards'):
+    if dataset == 'hf-dataset-cards':
+        hf_datasets = load_dataset(dataset)
+        hf_df = hf_datasets['train'].to_pandas()
+        hf_df.dropna(subset=['README'],inplace=True)
+        hf_df['description_full'] = hf_df['README']
+
+    else:
+        hf_datasets = load_dataset('nkasmanoff/huggingface-datasets')
+        hf_df = hf_datasets['train'].to_pandas()
+        hf_df['tags_cleaned'] = hf_df['tags'].apply(clean_up_tags)
+        hf_df.dropna(subset=['description'],inplace=True)
+        hf_df['description_full'] = hf_df['description'].fillna('') + ' ' + hf_df['tags_cleaned']
     hf_df = hf_df[hf_df['description_full'] != ' ']
     hf_df = hf_df[['id','description_full']]
 
