@@ -47,3 +47,27 @@ def scrape_dataset(dataset_metadata_file: str = 'data/responses.json') -> list:
             print(e)
 
     return responses
+
+
+def scrape_dataset_cards(dataset_cards_file: str = 'data/dataset-cards.json'):
+
+    all_datasets = datasets.list_datasets()
+    responses = []
+
+    for dataset_id in tqdm(all_datasets):
+        api_url = f"https://huggingface.co/datasets/{dataset_id}/raw/main/README.md"
+        try:
+            response = requests.get(api_url)
+            if response.status_code == 200:
+                response_text = response.text
+                # only keep id, private, tags, description, downloads, likes, pretty_name
+                response_saved = { 'id': dataset_id, 'README': response_text}
+                responses.append(response_saved)
+
+                with open(dataset_cards_file, 'w') as f:
+                    json.dump(responses, f)
+            else:
+                # some invalid response. Ignore for now
+                pass
+        except Exception as e:
+            print(e)
